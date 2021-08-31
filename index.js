@@ -26,7 +26,7 @@ app.get("/servers", async(req, res) => {
 })
 
 app.get("/bots", async(req, res) => {
-    const botss = await app.locals.bots.find({approved: true, listed: {$ne: false}}).toArray();
+    const bots = await app.locals.bots.find({approved: true, listed: {$ne: false}}).toArray();
     return res.json(bots);
 })
 
