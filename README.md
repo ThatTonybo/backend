@@ -1,4 +1,4 @@
-# New Revolt Backend
+# New Revolt.Social Backend
 
 
 - Let's talk about details first ([here](https://app.revolt.chat/invite/WY1Pc06K)) so code works for everyone
