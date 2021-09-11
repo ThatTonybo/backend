@@ -1,5 +1,5 @@
 # New Revolt.Social Backend
-
+# THIS IS ONLY A PROOF OF CONCEPT & DEFUNCT CODE. -> to be extended
 
 - Let's talk about details first ([here](https://app.revolt.chat/invite/WY1Pc06K)) so code works for everyone
 - Don't hesitate to ask me (nerrix) for anything, let it be minor questions
