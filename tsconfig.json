@@ -1,0 +1,14 @@
+{
+    "include": ["src/**/*"],
+    "compilerOptions": {
+      "target": "esnext",
+      "outDir": "./dist",
+      "moduleResolution": "node",
+      "module": "commonjs",
+      "resolveJsonModule": true,
+      "allowSyntheticDefaultImports": true,
+      "strictNullChecks": true,
+      "allowJs": true,
+      "esModuleInterop": true
+    }
+  }
