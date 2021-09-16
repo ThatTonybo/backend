@@ -2,6 +2,7 @@ import { Request, Response, Router } from 'express'
 import Bot from '../structs/Bot'
 import BotSchema from '../schemas/bot'
 
+import { authMiddleware } from '../util/auth'
 import { getBots, getBot, createBot } from '../util/bots'
 
 export default Router()
@@ -16,7 +17,7 @@ export default Router()
 
         return res.json(bots)
     })
-    .post('/', async (req: Request, res: Response) => {
+    .post('/', authMiddleware, async (req: Request, res: Response) => {
         if (!req.body) return res.status(400).json({ error: 'Request body missing' }).end()
         
         try {
@@ -37,7 +38,7 @@ export default Router()
 
         return res.json(bot.toJSON())
     })
-    .patch('/:bot', async (req: Request, res: Response) => {
+    .patch('/:bot', authMiddleware, async (req: Request, res: Response) => {
         const raw = await getBot(req.params.bot)
         if (!raw) return res.status(404).json({ error: 'Bot not found' }).end()
 
@@ -45,6 +46,8 @@ export default Router()
 
         try {
             await BotSchema.validate(req.body)
+
+            if (req.body['servers']) return res.status(400).json({ error: 'Unable to direcly set statistics' }).end()
 
             const bot = new Bot(raw as any)
 
@@ -55,7 +58,7 @@ export default Router()
             return res.json({ error: err })
         }
     })
-    .delete('/:bot', async (req: Request, res: Response) => {
+    .delete('/:bot', authMiddleware, async (req: Request, res: Response) => {
         const raw = await getBot(req.params.bot)
         if (!raw) return res.status(404).json({ error: 'Bot not found' }).end()
 

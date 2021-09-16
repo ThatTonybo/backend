@@ -17,4 +17,19 @@ export const connect = async () => {
     servers = db.collection('servers')
 }
 
+// Source: https://github.com/vkarpov15/mongo-sanitize/blob/master/index.js
+export const sanitize = (input) => {
+    if (input instanceof Object) {
+        for (let key in input) {
+            if (/^\$/.test(key)) {
+                delete input[key]
+            } else {
+                sanitize(input[key])
+            }
+        }
+    }
+    
+    return input
+}
+
 export { bots, servers }

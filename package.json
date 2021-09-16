@@ -3,8 +3,17 @@
   "version": "1.0.0",
   "description": "revolt.social backend",
   "main": "dist/index.js",
-  "author": "ThatTonybo <thattonybo@gmail.com>",
-  "license": "MIT",
+  "contributors": [
+    {
+      "name": "ThatTonybo",
+      "email": "thattonybo@gmail.com"
+    },
+    {
+      "name": "nerrixDE",
+      "email": "me@nerrix.ovh"
+    }
+  ],
+  "license": "AGPL",
   "private": false,
   "devDependencies": {
     "@types/cors": "^2.8.12",

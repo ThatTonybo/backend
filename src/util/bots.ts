@@ -1,10 +1,12 @@
 import Bot, { BotObject } from '../structs/Bot'
-import { bots } from './database'
+import { bots, sanitize } from './database'
 
 import { v4 as uuidv4 } from 'uuid'
 
 export const getBots = async (filter?: any): Promise<Bot[]> => {
-    const raw = await bots.find(filter || {}).toArray()
+    const sanitizedFilter = sanitize(filter || {})
+
+    const raw = await bots.find(sanitizedFilter).toArray()
 
     if (!raw.length) return []
 
@@ -23,33 +25,37 @@ export const getBot = async (id: string): Promise<Bot | undefined> => {
 }
 
 export const createBot = async (data: BotObject): Promise<Bot | undefined> => {
+    const sanitizedData = sanitize(data)
+
     const raw = await getBots()
 
-    if (raw.some(i => i.bot.id === data.bot_id)) throw 'Name already exists'
-    if (raw.some(i => i.vanity === data.vanity)) throw 'Vanity already in use'
+    if (raw.some(i => i.bot.id === sanitizedData.bot_id)) throw 'Name already exists'
+    if (raw.some(i => i.vanity === sanitizedData.vanity)) throw 'Vanity already in use'
 
-    data.id = uuidv4()
+    sanitizedData.id = uuidv4()
 
     await bots.insertOne({
-        ...data
+        ...sanitizedData
     })
 
-    const bot = new Bot(data)
+    const bot = new Bot(sanitizedData)
 
     return bot
 }
 
 export const editBot = async (id: string, data: Partial<BotObject>): Promise<Bot | undefined> => {
+    const sanitizedData = sanitize(data)
+    
     const raw = await getBots()
 
-    if (raw.some(i => i.bot.id === data.bot_id)) throw 'Name already exists'
-    if (raw.some(i => i.vanity === data.vanity)) throw 'Vanity already in use'
+    if (raw.some(i => i.bot.id === sanitizedData.bot_id)) throw 'Name already exists'
+    if (raw.some(i => i.vanity === sanitizedData.vanity)) throw 'Vanity already in use'
 
     await bots.updateOne({ id }, {
-        $set: data
+        $set: sanitizedData
     })
 
-    const bot = new Bot(data as any)
+    const bot = new Bot(sanitizedData as any)
 
     return bot
 }

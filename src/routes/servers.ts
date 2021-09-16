@@ -2,6 +2,7 @@ import { Request, Response, Router } from 'express'
 import Server from '../structs/Server'
 import ServerSchema from '../schemas/server'
 
+import { authMiddleware } from '../util/auth'
 import { getServers, getServer, createServer } from '../util/servers'
 
 export default Router()
@@ -16,7 +17,7 @@ export default Router()
 
         return res.json(servers)
     })
-    .post('/', async (req: Request, res: Response) => {
+    .post('/', authMiddleware, async (req: Request, res: Response) => {
         if (!req.body) return res.status(400).json({ error: 'Request body missing' }).end()
 
         try {
@@ -37,7 +38,7 @@ export default Router()
 
         return res.json(server.toJSON())
     })
-    .patch('/:server', async (req: Request, res: Response) => {
+    .patch('/:server', authMiddleware, async (req: Request, res: Response) => {
         const raw = await getServer(req.params.server)
         if (!raw) return res.status(404).json({ error: 'Server not found' }).end()
 
@@ -45,6 +46,8 @@ export default Router()
 
         try {
             await ServerSchema.validate(req.body)
+
+            if (req.body['users']) return res.status(400).json({ error: 'Unable to direcly set statistics' }).end()
 
             const server = new Server(raw as any)
 
@@ -55,7 +58,7 @@ export default Router()
             return res.json({ error: err })
         }
     })
-    .delete('/:server', async (req: Request, res: Response) => {
+    .delete('/:server', authMiddleware, async (req: Request, res: Response) => {
         const raw = await getServer(req.params.bot)
         if (!raw) return res.status(404).json({ error: 'Server not found' }).end()
 

@@ -1,10 +1,12 @@
 import Server, { ServerObject } from '../structs/Server'
-import { servers } from './database'
+import { servers, sanitize } from './database'
 
 import { v4 as uuidv4 } from 'uuid'
 
 export const getServers = async (filter?: any): Promise<Server[]> => {
-    const raw = await servers.find(filter || {}).toArray()
+    const sanitizedFilter = sanitize(filter || {})
+
+    const raw = await servers.find(sanitizedFilter).toArray()
 
     if (!raw.length) return []
 
@@ -23,33 +25,37 @@ export const getServer = async (id: string): Promise<Server | undefined> => {
 }
 
 export const createServer = async (data: ServerObject): Promise<Server | undefined> => {
+    const sanitizedData = sanitize(data)
+
     const raw = await getServers()
 
-    if (raw.some(i => i.server.id === data.server_id)) throw 'Name already exists'
-    if (raw.some(i => i.vanity === data.vanity)) throw 'Vanity already in use'
+    if (raw.some(i => i.server.id === sanitizedData.server_id)) throw 'Name already exists'
+    if (raw.some(i => i.vanity === sanitizedData.vanity)) throw 'Vanity already in use'
 
-    data.id = uuidv4()
+    sanitizedData.id = uuidv4()
 
     await servers.insertOne({
-        ...data
+        ...sanitizedData
     })
 
-    const server = new Server(data)
+    const server = new Server(sanitizedData)
 
     return server
 }
 
 export const editServer = async (id: string, data: Partial<ServerObject>): Promise<Server | undefined> => {
+    const sanitizedData = sanitize(data)
+    
     const raw = await getServers()
 
-    if (raw.some(i => i.server.id === data.server_id)) throw 'Name already exists'
-    if (raw.some(i => i.vanity === data.vanity)) throw 'Vanity already in use'
+    if (raw.some(i => i.server.id === sanitizedData.server_id)) throw 'Name already exists'
+    if (raw.some(i => i.vanity === sanitizedData.vanity)) throw 'Vanity already in use'
 
     await servers.updateOne({ id }, {
-        $set: data
+        $set: sanitizedData
     })
 
-    const server = new Server(data as any)
+    const server = new Server(sanitizedData as any)
 
     return server
 }

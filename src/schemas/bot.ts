@@ -7,14 +7,14 @@ export default yup.object().shape({
     short: yup.string().required().min(1).max(200),
     long: yup.string().required().min(1).max(5000),
     tags: yup.array().required().oneOf(tags as any),
-    owner_name: yup.string().required(),
-    owner_id: yup.string().required(),
-    bot_id: yup.string().required(),
-    invite: yup.string().required(),
-    support: yup.string(),
-    prefix: yup.string().required(),
-    help: yup.string().required(),
-    library: yup.string().required(),
-    avatar: yup.string().required().url(),
-    vanity: yup.string()
+    owner_name: yup.string().required().max(100),
+    owner_id: yup.string().required().max(50),
+    bot_id: yup.string().required().max(50),
+    invite: yup.string().required().max(200), // todo: URL regex check, must be app.revolt.chat valid invite)
+    support: yup.string().max(200), // todo:  URL regex check, must be app.revolt.chat valid invite)
+    prefix: yup.string().required().max(5),
+    help: yup.string().required().max(25),
+    library: yup.string().required().max(25),
+    avatar: yup.string().required().url().max(500), // todo: URL regex check, must be *.revolt.chat/ - PNG or GIF
+    vanity: yup.string().min(4).max(20)
 })
